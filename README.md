@@ -18,6 +18,6 @@ Step 4: Transmit events using the caep.dev transmitter. <br>
 Step 5: Run Main.java to see the parsed ssf evenst that you transmit. <br>
 
 <br><br>
-Todos:<br>
+Todos:
 1. Make command line build work.
-2. Debug unmarshal error. 
+2. Debug unmarshal error for event handling. 
