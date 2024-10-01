@@ -11,8 +11,13 @@ A Java implementation of the OpenID Shared Signals Framework Reciever.
 Utilizing the access token found in the Reciever.java file in pollEvents(), begin transmitting with the Transmitter found at <a href = "https://caep.dev/">caep.dev</a>.<br><br>
 Run <a href = "src/main/java/Main.java">Main.java</a> to see the parsed SsfEvents that you transmit. 
 
-step 1: pull the code <br>
-step 2: register with caep.dev to get an access token for transmitting <br>
-step 3: in Receiver.java in pollEvents() edit the access token field to contian your unique access token gotten from caep.dev registration <br>
-step 4: transmit events using the caep.dev transmitter <br>
-step 5: run main.java to see the parsed ssf evenst that you transmit <br>
+Step 1: Pull the code using IntelliJ (build system not yet set up for command line).<br>
+Step 2: Register with caep.dev to get an access token for transmitting. <br>
+Step 3: In Receiver.java in pollEvents() edit the access token field to contian your unique access token gotten from caep.dev registration. <br>
+Step 4: Transmit events using the caep.dev transmitter. <br>
+Step 5: Run Main.java to see the parsed ssf evenst that you transmit. <br>
+
+<br><br>
+Todos:<br>
+1. Make command line build work.
+2. Debug unmarshal error. 
