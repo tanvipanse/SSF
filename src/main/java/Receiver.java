@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.net.http.*;
@@ -14,6 +15,7 @@ import java.net.URI;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.Base64;
 
 
 public class Receiver {
@@ -48,15 +50,15 @@ public class Receiver {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String respStripped = response.body().substring(8);
-        System.out.println(respStripped); //debugging
-        TypeReference<HashMap<String,Object>> typeRef = new TypeReference<>() {};
-        HashMap<String,Object> body;
-        try {
-            body = objectMapper.readValue(new ByteArrayInputStream(respStripped.getBytes("UTF-8")), typeRef);
-        } catch (Exception e) {
-            throw new Exception("unable to unmarshal");
-        }
+//        String respStripped = response.body().substring(8);
+//        System.out.println(respStripped); //debugging
+//        TypeReference<HashMap<String,Object>> typeRef = new TypeReference<>() {};
+//        HashMap<String,Object> body;
+//        try {
+//            body = objectMapper.readValue(new ByteArrayInputStream(respStripped.getBytes("UTF-8")), typeRef);
+//        } catch (Exception e) {
+//            throw new Exception("unable to unmarshal");
+//        }
 
         if (response.statusCode() != 200 && response.statusCode() != 202) {
             throw new Exception("status code failure");
@@ -65,25 +67,32 @@ public class Receiver {
         SsfEventSets ssfEventSets;
         ObjectMapper objMapper = new ObjectMapper();
 
-        System.out.println("Body: " + body);
+        //System.out.println("Body: " + body);
+//        try {
+//            System.out.println("entered here");
+//            String jsonString = objMapper.writeValueAsString(body);
+//            System.out.println("pre unmarshal" + jsonString);
+//            ssfEventSets = objMapper.readValue(jsonString, SsfEventSets.class);
+//        } catch (Exception e) {
+//            throw new Exception("unable to unmarshal");
+//        }
+
         try {
-            String jsonString = objMapper.writeValueAsString(body);
-            System.out.println(jsonString);
-            ssfEventSets = objMapper.readValue(jsonString, SsfEventSets.class);
+            //String jsonString = objMapper.writeValueAsString(body);
+            ssfEventSets = objMapper.readValue(response.body(), SsfEventSets.class);
         } catch (Exception e) {
             throw new Exception("unable to unmarshal");
         }
 
+
         if (ssfEventSets.sets.size() > 0) {
             try {
-                System.out.println("hello2"); //debugging
                 acknowledgeEvents(ssfEventSets.sets);
             } catch (Exception e) {
                 throw new Exception("unable to acknowledge events");
             }
         }
 
-        System.out.println("hello"); //debugging
         return parseSsfEventSets(ssfEventSets.sets);
 
 
@@ -152,10 +161,10 @@ public class Receiver {
         List<SsfEvent> ssfEventsList = new ArrayList<>();
         Map<String, Object> ssfEvents;
 
-        for (String set : sets.keySet()) {
+        for (String set : sets.keySet()) { //this is wrong, it truncates the set
             DecodedJWT decodedJWT;
             try {
-                decodedJWT = JWT.decode(set);
+                decodedJWT = JWT.decode(sets.get(set)); //changed from JWT.decode(set)
             } catch (JWTDecodeException e) {
                 throw new Exception("decode failed");
             }
@@ -166,8 +175,7 @@ public class Receiver {
                 throw new Exception("Can't get JWT Claims");
             }
 
-            if (claims.get("events") instanceof Map) {
-                System.out.println(claims.get("events")); //debugging
+            if (claims.get("events").asMap() != null) {
                 ssfEvents = claims.get("events").asMap();
             } else {
                 throw new Exception("unable to parse events");
