@@ -20,4 +20,4 @@ Step 5: Run Main.java to see the parsed ssf evenst that you transmit. <br>
 <br><br>
 Todos:
 1. Make command line build work.
-2. Debug unmarshal error for event handling. 
+2. Debug multiple event handling.  
